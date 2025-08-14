@@ -7,7 +7,7 @@ from random import sample
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import matplotlib.pyplot as plt
 import torch.utils.data as Data
-# --- Real-world Dataset Loading ---
+# --- Dataset Loading ---
 
 DATASET_CONFIG = {
     'diabetes': {'target': 'diabetes_mellitus', 'type': 'classification', 'num_classes': 2},
