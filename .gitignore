@@ -128,7 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# 项目特定忽略文件
 logs/*.log
 logs/*.pkl
 logs/*.pth
