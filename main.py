@@ -78,8 +78,6 @@ def main(args):
         
         epoch_logs = {'train_loss': 0, 'val_loss': 0, 'weighted_loss': 0, 'reg_loss': 0}
         
-        # We zip loaders, assuming they have similar length for this pseudo-code
-        # A real implementation would handle differing lengths (e.g., by cycling the smaller one)
         for i, (train_batch, val_batch) in enumerate(zip(train_loader, val_loader)):
             # Step 1: Compute adapted lower-level model
             meta_model, meta_loss = update_lower_level_meta(
@@ -115,9 +113,6 @@ def main(args):
 
     print(f"Training finished in {(time.time() - start_time)/60:.2f} minutes.")
     
-    # --- Final Evaluation ---
-    # ... evaluation logic on test_loader ...
-
 if __name__ == '__main__':
     args = parse_args()
     main(args)
