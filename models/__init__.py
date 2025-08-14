@@ -1,6 +1,6 @@
 """
-BTAM 模型包
-包含概念编码器和Taylor网络的核心模型定义
+BTAM model package
+Core model definitions including conceptual encoders and Taylor networks
 """
 
 from .batm_concept_encoder import ConceptNet, ExU
