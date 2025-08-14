@@ -3,8 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-# --- MetaModule and Update Logic ---
-
 def to_var(x, requires_grad=True):
     return Variable(x, requires_grad=requires_grad) if torch.cuda.is_available() else Variable(x, requires_grad=requires_grad)
 
@@ -48,8 +46,6 @@ class MetaModule(nn.Module):
         else:
             setattr(curr_mod, name, param)
 
-# --- Meta Learner (Upper-level Model) ---
-
 class MetaLinear(MetaModule):
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -71,7 +67,6 @@ class MetaWeightNet(MetaModule):
         x = self.relu(self.linear1(x))
         return torch.sigmoid(self.linear2(x))
 
-# --- Sparsity-inducing Proximal Updates ---
 
 def proximal_group_lasso(w, lam, eta, group_size):
     num_groups = w.shape[-1] // group_size
@@ -87,30 +82,24 @@ def proximal_group_lasso(w, lam, eta, group_size):
     v = w_reshaped * scale_factor
     w.data = v.view_as(w)
 
-# --- Bilevel Update Steps ---
 
 def update_lower_level_meta(lower_model, upper_model, train_batch, criterion, args, device):
     """ Step 1: Compute adapted lower-level model on training data. """
     x_train, y_train = train_batch
     x_train, y_train = x_train.to(device), y_train.to(device)
 
-    # Create a virtual model for meta-update
     meta_model = type(lower_model)(**lower_model.init_kwargs).to(device)
     meta_model.load_state_dict(lower_model.state_dict())
 
-    # Forward pass on virtual model
     y_pred_meta, _ = meta_model(x_train)
     cost = criterion(y_pred_meta, y_train)
     
-    # Get sample weights from upper-level model
     weights = upper_model(cost.view(-1, 1).data)
     
-    # Compute weighted loss and gradients
     weighted_loss = torch.sum(weights * cost) / len(cost)
     meta_model.zero_grad()
     grads = torch.autograd.grad(weighted_loss, meta_model.params(), create_graph=True)
     
-    # Update virtual model parameters
     meta_model.update_params(lr_inner=args.lower_lr, source_params=grads)
     
     return meta_model, weighted_loss.item()
@@ -120,11 +109,9 @@ def update_upper_level(meta_model, optimizer_upper, val_batch, criterion, device
     x_val, y_val = val_batch
     x_val, y_val = x_val.to(device), y_val.to(device)
     
-    # Forward pass on the adapted model
     y_pred_val, _ = meta_model(x_val)
     val_loss = criterion(y_pred_val, y_val).mean()
     
-    # Update upper-level model
     optimizer_upper.zero_grad()
     val_loss.backward()
     optimizer_upper.step()
@@ -151,15 +138,11 @@ def update_lower_level_final(lower_model, upper_model, optimizer_lower, train_ba
     regularization_loss = lower_model.regularization_loss(concepts)
     total_loss = weighted_loss + regularization_loss
     
-    # Update actual lower-level model
     optimizer_lower.zero_grad()
     total_loss.backward()
     optimizer_lower.step()
     
-    # Apply sparsity-inducing proximal update
     if args.penalty_coef > 0:
-        # Assuming the first layer of the taylor head is the target for sparsity
-        # This is a simplification; a real implementation would be more specific.
         taylor_weights = lower_model.taylor_head.Is
         proximal_group_lasso(taylor_weights, lam=args.penalty_coef, eta=args.lower_lr, group_size=1)
         
