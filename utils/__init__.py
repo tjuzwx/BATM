@@ -1,6 +1,6 @@
 """
-BTAM 工具包
-包含数据处理、加载和其他辅助功能
+BTAM Toolkit
+It includes data processing, loading and other auxiliary functions
 """
 
 from .data_utils import CustomDataset, get_datasets, DATASETS
