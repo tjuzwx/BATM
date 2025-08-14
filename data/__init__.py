@@ -1,11 +1,11 @@
 """
-数据处理模块
-包含数据加载、预处理和管理功能
+Data processing module
+It includes data loading, preprocessing and management functions
 """
 
 from .data_loader import DataManager, get_data_manager
 
-# 如果data_utils在utils目录，则从那里导入
+
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
