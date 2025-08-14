@@ -3,7 +3,7 @@ Data processing module
 It includes data loading, preprocessing and management functions
 """
 
-from .data_loader import DataManager, get_real_dataset
+from .data_loader import Regression, Classfication_corrupted, Classfication_imbalance, Classfication_multi
 
 
 import sys
@@ -18,4 +18,4 @@ except ImportError:
     get_datasets = None
     DATASETS = {}
 
-__all__ = ['DataManager', 'get_real_dataset', 'CustomDataset', 'get_datasets', 'DATASETS']
+__all__ = ['Regression', 'Classfication_corrupted', 'Classfication_imbalance', 'Classfication_multi', 'CustomDataset', 'get_datasets', 'DATASETS']
