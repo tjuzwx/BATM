@@ -39,7 +39,7 @@ def main(args):
     if 'synthetic' in args.data_name:
         train_ds, val_ds, test_ds, features, c_groups, c_names = get_synthetic_dataset(args.data_name)
         data_type = 'regression' if 'regression' in args.data_name else 'classification'
-        num_classes = 1 if data_type == 'regression' else 2 # Assuming binary for synthetic
+        num_classes = 1 if data_type == 'regression' else 2 
     else:
         train_ds, val_ds, test_ds, features, c_groups, c_names = get_real_dataset(args.data_name)
         data_type = DATASET_CONFIG[args.data_name]['type']
